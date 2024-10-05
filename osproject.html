@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Round Robin Scheduler Table</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Add CSS styles for the table */
+        .table-container {
+            margin-top: 20px;
+        }
+
+        #roundRobinTable {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #roundRobinTable th, #roundRobinTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #roundRobinTable th {
+            background-color: #f2f2f2;
+        }
+
+        /* Add CSS styles for the form */
+        .form-container {
+            margin-top: 20px;
+        }
+
+        .form-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-container input[type="text"] {
+            width: 100px;
+            margin-bottom: 10px;
+        }
+
+        .form-container input[type="submit"] {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Add CSS styles for validation messages */
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        /* Add CSS styles for the Gantt chart */
+        .gantt-chart {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .bar {
+            height: 30px;
+            background-color: #007bff;
+            border: 1px solid #000;
+            margin-right: 2px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .bar-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Round Robin Scheduler Table</h1>
+    <div class="form-container">
+        <form id="inputForm">
+            <!-- Removed process name input field -->
+            <label for="arrivalTime">Arrival Time:</label>
+            <input type="text" id="arrivalTime" name="arrivalTime" required>
+
+            <label for="burstTime">Burst Time:</label>
+            <input type="text" id="burstTime" name="burstTime" required>
+
+            <input type="submit" value="Add Process">
+        </form>
+        <div id="validationMessages"></div> <!-- Container for validation messages -->
+    </div>
+
+    <div class="table-container">
+        <table id="roundRobinTable">
+            <thead>
+                <tr>
+                    <th>Process</th>
+                    <th>Arrival Time</th>
+                    <th>Burst Time</th>
+                    <th>Completion Time</th>
+                    <th>Turn Around Time</th>
+                    <th>Waiting Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows will be populated dynamically using JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="gantt-chart" id="ganttChart"></div> <!-- Container for Gantt chart -->
+
+    <div id="averageTimes"></div> <!-- Container for average TAT and WT -->
+
+    <script>
+        // Sample data for demonstration
+        let roundRobinData = [];
+        let processCounter = 1; // Counter for process name
+        let quantum = 4; // Example quantum time
+
+        // Function to populate the Round Robin table
+        function populateRoundRobinTable() {
+            const tableBody = document.querySelector('#roundRobinTable tbody');
+            tableBody.innerHTML = ''; // Clear existing table rows
+
+            roundRobinData.forEach(data => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data.process}</td>
+                    <td>${data.arrival}</td>
+                    <td>${data.burst}</td>
+                    <td>${data.completion}</td>
+                    <td>${data.turnaround}</td>
+                    <td>${data.waiting}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Update Gantt chart
+            generateGanttChart();
+
+            // Update average TAT and WT
+            calculateAverageTimes();
+        }
+
+        // Function to calculate Round Robin scheduling
+        function calculateRoundRobin() {
+            // Get user input values
+            const arrivalTime = parseInt(document.getElementById('arrivalTime').value);
+            const burstTime = parseInt(document.getElementById('burstTime').value);
+
+            // Validate input values
+            const validationMessages = document.getElementById('validationMessages');
+            validationMessages.innerHTML = ''; // Clear existing validation messages
+
+            if (isNaN(arrivalTime) || arrivalTime < 0) {
+                validationMessages.innerHTML = 'Arrival time must be a non-negative integer.';
+                return; // Exit function if validation fails
+            }
+
+            if (isNaN(burstTime) || burstTime <= 0) {
+                validationMessages.innerHTML = 'Burst time must be a positive integer.';
+                return; // Exit function if validation fails
+            }
+            
+            // Calculate completion time, turnaround time, and waiting time
+            // Calculate completion time, turnaround time, and waiting time
+let completionTime = arrivalTime;
+let remainingBurstTime = burstTime;
+let turnaroundTime = 0;
+let waitingTime = 0;
+
+while (remainingBurstTime > 0) {
+    if (remainingBurstTime <= quantum) {
+        completionTime += remainingBurstTime;
+        turnaroundTime += completionTime - arrivalTime;
+        // Corrected waiting time calculation
+// waitingTime = turnaroundTime - burstTime;
+waitingTime += completionTime - arrivalTime - burstTime;
+ // Corrected waiting time calculation
+        remainingBurstTime = 0;
+    } else {
+        completionTime += quantum;
+        remainingBurstTime -= quantum;
+    }
+}
+
+            // Add the data to the roundRobinData array
+            roundRobinData.push({
+                process: P${processCounter++}, // Assign process name in ascending order
+                arrival: arrivalTime,
+                burst: burstTime,
+                completion: completionTime,
+                turnaround: turnaroundTime,
+                waiting: waitingTime
+            });
+
+            // Repopulate the table
+            populateRoundRobinTable();
+            // Clear form fields
+            document.getElementById('arrivalTime').value = '';
+            document.getElementById('burstTime').value = '';
+        }
+
+        // Function to generate Gantt chart
+        function generateGanttChart() {
+            const ganttChartContainer = document.getElementById('ganttChart');
+            ganttChartContainer.innerHTML = ''; // Clear existing chart
+
+            roundRobinData.forEach((data, index) => {
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                bar.style.width = ${data.burst * 20}px; // Adjust width based on burst time
+
+                const barText = document.createElement('span');
+                barText.classList.add('bar-text');
+                barText.textContent = P${index + 1}: ${data.burst}; // Process number and duration
+                bar.appendChild(barText);
+
+                ganttChartContainer.appendChild(bar);
+            });
+        }
+
+        // Function to calculate average TAT and WT
+        function calculateAverageTimes() {
+            const averageTAT = roundRobinData.reduce((acc, curr) => acc + curr.turnaround, 0) / roundRobinData.length;
+            const averageWT = roundRobinData.reduce((acc, curr) => acc + curr.waiting, 0) / roundRobinData.length;
+
+            const averageTimesContainer = document.getElementById('averageTimes');
+            averageTimesContainer.innerHTML = <p>Average Turnaround Time: ${averageTAT.toFixed(2)}</p><p>Average Waiting Time: ${averageWT.toFixed(2)}</p>;
+        }
+
+        // Handle form submission
+        const form = document.getElementById('inputForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            calculateRoundRobin();
+        });
+
+    </script>
+</body>
+</html>

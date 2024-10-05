@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>WT-3</title>
+
+<style
+>
+form
+{
+ border: 2px
+solid black;
+padding: 20px;
+width: 300px;
+margin: auto;
+ background-color: #f2f2f2;
+ }
+ </style>
+</head>
+<body>
+ <center>
+ <h1><u><i><b>Registration Form
+:</b></i></u></h1> <br>
+ <h2><u><i>User Details</i></u></h2><br>
+ <form id="registrationForm">
+ <label>First Name :</label>
+ <input type="text" id="firstName" name="firstName"><br><br>
+ <label>Last Name :</label>
+ <input type="text" id="lastName" name="lastName"><br><br>
+ <label>Password :</label>
+ <input type="password" id="password" name="password"><br><br>
+ <label>Email Id :</label>
+ <input type="email" id="email" name="email"><br><br>
+ <label>Date Of Birth :</label>
+ <input type="date" id="dob" name="dob"><br><br>
+ <label>Gender :</label>
+ <input type="radio" name="gender" id="male" value="male">Male 
+ <input type="radio" name="gender" id="female"
+ value="female">Female<br><br> <label>Hobbies :</label>
+  <input type="checkbox" id="coding" name="hobbies" value="Coding">Coding
+  <input type="checkbox" id="games" name="hobbies" value="Games">Games
+  <input type="checkbox" id="cricket" name="hobbies" value="Cricket">Cricket
+  <input type="checkbox" id="music" name="hobbies"
+ value="Music">Music<br><br>
+  <label>Address :</label>
+  <textarea id="address" name="address"></textarea><br><br>
+  <label>Country :</label>
+  <select id="country" name="country">
+  <option value="India">India</option>
+  <option value="America">America</option>
+  <option value="Canada">Canada</option>
+  <option value="Germany">Germany</option>
+  </select><br><br>
+  <input type="submit" id="submit">&nbsp;&nbsp;&nbsp;<input type="reset">
+ <br><br>
+  </form>
+  <div id="tableContainer"></div>
+  </center> <script> const form =
+ document.getElementById('registrationForm'); const
+ tableContainer =
+ document.getElementById('tableContainer');
+  form.addEventListener('submit',
+ (e) => { e.preventDefault();
+ const formData = new
+ FormData(form); const
+ userData = {};
+  for (const [key, value] of formData) {
+  if (key ===
+ 'hobbies') { if
+ (!userData.hobbies) {
+  userData.hobbies = [];
+  }
+  userData.hobbies.push(value);
+  } else {
+  userData[key] = value;
+  }
+  }
+  if (userData.hobbies) {
+  userData.hobbies = userData.hobbies.join(', ');
+  } 
+  const table = document.createElement('table');
+table.border = '1';
+ const tableHead =
+document.createElement('thead'); const
+tableBody = document.createElement('tbody');
+tableHead.innerHTML = `
+ <tr>
+ <th>First Name</th>
+ <th>Last Name</th>
+ <th>Password</th>
+ <th>Email Id</th>
+ <th>Date Of Birth</th>
+ <th>Gender</th>
+ <th>Hobbies</th>
+ <th>Address</th>
+ <th>Country</th>
+ </tr>
+ `;
+ const tableRow = document.createElement('tr');
+tableRow.innerHTML = `
+<td>${userData.firstName}</td>
+ <td>${userData.lastName}</td>
+ <td>${userData.password}</td>
+ <td>${userData.email}</td>
+ <td>${userData.dob}</td>
+ <td>${userData.gender}</td>
+ <td>${userData.hobbies}</td>
+ <td>${userData.address}</td>
+ <td>${userData.country}</td>
+ `;
+ tableBody.appendChild(tableRow);
+table.appendChild(tableHead);
+table.appendChild(tableBody);
+tableContainer.innerHTML = '';
+tableContainer.appendChild(table);
+ });
+ </script>
+</body>
+</html> 
